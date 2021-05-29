@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Swarm</title>
+    <title>Swarm Dashboard</title>
     <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
     <script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
 
@@ -16,6 +16,7 @@
     <i-table :columns="header" :data="bees" :width="1100">
         <template slot-scope="{ row }" slot="name">
             <a :href="row.addresses"  target="_blank">{{ row.name }}</a>
+            <a >版本:{{ row.version.substring(0,5) }}</a>
         </template>
         <template slot-scope="{ row }" slot="unCashoutPeers">
             <strong>{{ row.unCashoutPeers? row.unCashoutPeers.length:0 }}</strong>
@@ -40,11 +41,12 @@
             </i-button>&nbsp;
         </template>
         <template slot-scope="{ row,index }" slot="link">
-
-            <i-button @click="linkAdress(index)"  size="small"> 钱包</i-button>&nbsp;
-            <i-button @click="linkContract(index)"  size="small"> 支票</i-button>&nbsp;
+            <a @click="linkAdress(index)"  > 钱包</a>&nbsp;
+            <a @click="linkContract(index)" > 支票</a>&nbsp;
         </template>
-
+        <Card  style="float: right">
+111
+        </Card >
     </i-table>
 
     <!--    <h5>BEE 列表</h5>  <i-button>一键提票</i-button>&nbsp;-->
@@ -69,7 +71,7 @@
             return {
                 header: [
                     {
-                        title: 'Name',
+                        title: '节点',
                         key: 'name',
                         slot: 'name',
 
@@ -93,17 +95,21 @@
                         title: '连接数',
                         slot: 'countPeers',
                         key: 'countPeers',
-                        sortable: true
+                        sortable: true,
+                        width: 100
                     },
                     {
                         title: '支票',
                         key: 'countChequebook',
                         slot: 'countChequebook',
-                        sortable: true
+                        sortable: true,
+                        width: 100
                     },
                     {
                         title: '待提现',
-                        slot: 'unCashoutPeers'
+                        slot: 'unCashoutPeers',
+                        sortable: true,
+                        width: 100
                     },
                     {
                         title: '操作',
@@ -112,7 +118,7 @@
                     },{
                         title: '区块浏览器',
                         slot: 'link',
-                        width: 150
+                        width: 120
                     },
                 ],
                 bees: []
@@ -157,7 +163,7 @@
         },
 
         mounted() {
-            for (let i = 1; i < 2; i++) {
+            for (let i = 1; i < 3; i++) {
                 this.bees.push({
                     name: "bee" +i,
                     ip: "127.0.0.1",
