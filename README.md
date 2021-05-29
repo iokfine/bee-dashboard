@@ -2,7 +2,7 @@
 管理多个bee节点
 
 
-1.git pull 
+1.git pull main分支
 
 2.双击 nginx.exe
 
