@@ -4,7 +4,7 @@
 
 1.git pull main分支
 
-2.双击 nginx.exe
+2.双击 nginx.exe 闪一下
 
 3.在浏览器上面打开 http://localhost
 
