@@ -8,6 +8,9 @@
 
 3.在浏览器上面打开 http://localhost
 
+请关注更新。。。。。。。
+新版增加统计支票统计
+强化配置
 
 ![avatar](https://z3.ax1x.com/2021/05/30/2VCVBj.png)
 <br/>
