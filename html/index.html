@@ -44,11 +44,15 @@
             <a @click="linkAdress(index)"  > 钱包</a>&nbsp;
             <a @click="linkContract(index)" > 支票</a>&nbsp;
         </template>
-        <Card  style="float: right">
-111
-        </Card >
-    </i-table>
 
+    </i-table>
+    <Card  style="width: 160px;position: absolute;right:5px;top:120px">
+        <p slot="title">问题</p>
+        <p>1.区块浏览器需要梯子才能访问！ </p>
+        <p>2.待提现支票可能已经提过，可能是区块卡住.多提值为0！ </p>
+        <p>3.手动添加节点需要工具！ </p>
+        <p>4.刷新即可刷新页面数据！ </p>
+    </Card >
     <!--    <h5>BEE 列表</h5>  <i-button>一键提票</i-button>&nbsp;-->
     <!--    <div v-for="(bee,index) in bees" :key="index">-->
     <!--        Bee {{index+1}} :-->
@@ -170,10 +174,15 @@
                     port: i+"635"
                 })}
 
+            let tmp = "嘻嘻嘻 爱我吧"+"\n"
             this.bees = this.bees.map((bee, index) => {
                 let no = index + 1;
                 let host = 'http://' + bee.ip + ':' + bee.port;
-                console.log(host)
+                // console.log(host)
+
+                let ng = "   location  /"+no+"/  {  proxy_pass " +host+"/;}" +"\n"
+                // console.log(ng)
+                tmp=tmp+ng
                 return {
                     chequebook: host + "/chequebook/cheque",
                     peers: host + "/peers",
@@ -191,6 +200,7 @@
                     ...bee
                 }
             })
+            console.log(tmp)
             for (let i = 0; i < this.bees.length; i++) {
                 axios.get(this.bees[i].proxyUrl + '/health').then(resp => {
                     this.bees[i].version = resp.data.version
