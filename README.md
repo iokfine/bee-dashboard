@@ -12,7 +12,7 @@
 新版增加统计支票统计
 强化配置
 
-![avatar](https://z3.ax1x.com/2021/05/30/2VCVBj.png)
+![](https://www.hualigs.cn/image/60b43e0e1c5f3.jpg)
 <br/>
 <br/>
 <br/>
