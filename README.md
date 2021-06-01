@@ -8,11 +8,11 @@
 
 3.在浏览器上面打开 http://localhost
 
-请关注更新。。。。。。。
-新版增加统计支票统计
+请关注更新。。。。。。。2021.05.31
+新版增加统计支票统计2021.05.31
 强化配置
 
-![avatar](https://z3.ax1x.com/2021/05/30/2VCVBj.png)
+![](https://www.hualigs.cn/image/60b43e0e1c5f3.jpg)
 <br/>
 <br/>
 <br/>
@@ -20,9 +20,10 @@
 	
 #### 拓展中： 有需要定制+v
 <img src="https://www.hualigs.cn/image/60b3094248817.jpg" width="200" height="250"/>
+<img src="https://www.hualigs.cn/image/60b4cb78c76d0.jpg" width="200" height="250"/>
 <br/>
 
 #### 喜欢的话给我捐点水：地址 0x10e132149db4De5fc495e648226aaCF43697D442
 
 
-节点多开，技术支持,大量出GBZZ和GETH
+节点多开，技术支持,需要gBZZ和gETH的免费给
