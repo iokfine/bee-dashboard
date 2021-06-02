@@ -15,6 +15,7 @@
         在线：<Tag color="success">{{bees.length-nodeErrorNum}}</Tag>
         离线 ：<Tag color="error">{{nodeErrorNum}}</Tag>
         支票总数 ：<Tag color="success">{{toCheque}}</Tag>
+        gBZZ总额度 ：<Tag color="success">4.1223654</Tag>
     </Card>
     <br>
     <i-table :columns="header" :data="bees" :width="1100" show-summary :summary-method="handleSummary">
@@ -256,9 +257,10 @@
                     nodeNum: this.bees.length,
                     nodeErrorNum: 0,
                     version: "",
-                    balance: null,
                     chequebookPeers: [],
                     unCashoutPeers: [],
+                    uncashBalance: 0,
+                    balance: 0,
                     proxyUrl: 'http://localhost/' + no,
                     ...bee
                 }
@@ -274,6 +276,9 @@
                         this.bees[i].countPeers = resp.data.peers.length
                     })
 
+                    axios.get(this.bees[i].proxyUrl + '/chequebook/balance').then(resp => {
+                         console.log(this.bees[i].name +" :"+ JSON.stringify(resp.data))
+                    })
                     axios.get(this.bees[i].proxyUrl + '/chequebook/cheque').then(resp => {
                         this.bees[i].countChequebook = 0
                         if (resp.data.lastcheques.length > 0) {
