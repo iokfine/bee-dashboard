@@ -2,3 +2,5 @@
 logs/access.log
 logs/error.log
 logs/nginx.pid
+html/MySwarm.conf
+conf/nginx.conf
