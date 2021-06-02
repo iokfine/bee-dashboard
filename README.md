@@ -15,7 +15,7 @@
 新版增加统计支票统计2021.05.31
 强化配置
 
-![](https://www.hualigs.cn/image/60b43e0e1c5f3.jpg)
+![](https://www.hualigs.cn/image/60b74f0425cca.jpg)
 <br/>
 <br/>
 <br/>
