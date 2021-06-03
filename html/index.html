@@ -14,12 +14,18 @@
         节点数量：<Tag color="success">{{bees.length}}</Tag>
         在线：<Tag color="success">{{bees.length-nodeErrorNum}}</Tag>
         离线 ：<Tag color="error">{{nodeErrorNum}}</Tag>
-        支票总数 ：<Tag color="success">{{toCheque}}</Tag>
+        支票总数 ：<Tag color="success">{{allCheque}}</Tag>
+        有效支票总数 ：<Tag color="success">{{toCheque}}</Tag>
+        无效支票总数 ：<Tag >{{allCheque -toCheque}}</Tag>
+<!--        gBZZ总额度 ：<Tag color="success">3.8</Tag>-->
+<!--         <i-button type="success">全部提取</i-button>-->
     </Card>
     <br>
-    <i-table :columns="header" :data="bees" :width="1100" show-summary :summary-method="handleSummary">
+    <i-table :columns="header" :data="bees" :width="1100" show-summary :summary-method="handleSummary" size="small">
         <template slot-scope="{ row }" slot="name">
-            <a :href="row.addresses"  target="_blank">{{ row.name }} 版本:{{ row.version.substring(0,5) }}</a>
+            <a :href="row.addresses"  target="_blank"> 名字:{{ row.name }}</a>
+            <br/>
+            <a :href="row.addresses"  target="_blank"> 版本:{{ row.version.substring(0,5) }}</a>
         </template>
         <template slot-scope="{ row }" slot="unCashoutPeers">
             <strong>{{ row.unCashoutPeers? row.unCashoutPeers.length:0 }}</strong>
@@ -28,7 +34,11 @@
             <a :href="row.peers"  target="_blank">{{ row.countPeers }}</a>
         </template>
         <template slot-scope="{ row }" slot="countChequebook">
-            <a :href="row.chequebook"  target="_blank">{{ row.countChequebook }}</a>
+            <a :href="row.chequebook"  target="_blank">
+                <strong >{{ row.allChequebookNum }}</strong>/
+                <strong style="color: #21ac38" >{{ row.countChequebook }}</strong>/
+                <span style="color: #fa0352">{{ row.allChequebookNum - row.countChequebook}}</span>
+            </a>
         </template>
         <template slot-scope="{ row }" slot="status">
             <Tag color="success" v-if="row.status === '良好'">在线</Tag>
@@ -110,7 +120,23 @@
                         key: 'countChequebook',
                         slot: 'countChequebook',
                         sortable: true,
-                        width: 100
+                        width: 100,
+                        renderHeader: (h, params) => {
+                            console.log(params)
+                            return h('span', [
+                                    h('span', {
+                                        //<Icon type="md-help" />
+                                        domProps: {
+                                            innerHTML: "支票"
+                                        }
+                                    }), h('a', {
+                                    domProps: {
+                                            title: "总数/有效/无效"
+                                        }
+                                    },"  ？"
+                                )
+                            ],"");
+                        }
                     },
                     {
                         title: '待提现',
@@ -130,7 +156,8 @@
                 ],
                 bees: [],
                 nodeErrorNum:0,
-                toCheque:0
+                toCheque:0,
+                allCheque:0,
             }
         },
         methods: {
@@ -250,15 +277,18 @@
                     addresses: host + "/addresses",
                     chequebookaddr: host + "/chequebook/address",
                     countPeers: 0,
-                    countChequebook: 0,
+
                     chequebookStatus: 0,
                     status: 0,
                     nodeNum: this.bees.length,
                     nodeErrorNum: 0,
                     version: "",
-                    balance: null,
+                    countChequebook: 0,
+                    allChequebookNum: 0,
                     chequebookPeers: [],
                     unCashoutPeers: [],
+                    uncashBalance: 0,
+                    balance: 0,
                     proxyUrl: 'http://localhost/' + no,
                     ...bee
                 }
@@ -274,12 +304,18 @@
                         this.bees[i].countPeers = resp.data.peers.length
                     })
 
+                    axios.get(this.bees[i].proxyUrl + '/chequebook/balance').then(resp => {
+                         console.log(this.bees[i].name +" :"+ JSON.stringify(resp.data))
+                    })
                     axios.get(this.bees[i].proxyUrl + '/chequebook/cheque').then(resp => {
                         this.bees[i].countChequebook = 0
                         if (resp.data.lastcheques.length > 0) {
+                            this.bees[i].allChequebookNum  =  this.bees[i].allChequebookNum + resp.data.lastcheques.length
                             let arr = resp.data.lastcheques
+                            if(resp.data.lastcheques){
+                                this.allCheque = this.allCheque + resp.data.lastcheques.length
+                            }
                             arr.forEach(m => {
-
                                 if (m.lastreceived) {
                                     this.toCheque++
 
