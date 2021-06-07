@@ -188,7 +188,7 @@
             },
             linkContract(index){
                 axios.get(this.bees[index].proxyUrl + '/chequebook/address').then(resp => {
-                     window.open("https://goerli.etherscan.io/address/"+resp.data.chequebookaddress+"#tokentxns")
+                     window.open("https://goerli.etherscan.io/address/"+resp.data.chequebookAddress+"#tokentxns")
                 })
             },
             cashout(index) {
