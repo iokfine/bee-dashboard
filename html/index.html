@@ -18,7 +18,7 @@
 <!--         <i-button type="success">全部提取</i-button>-->
     </Card>
     <br>
-    <i-table :columns="header" :data="bees" :width="1100" show-summary :summary-method="handleSummary" size="small">
+    <i-table :columns="header" :data="bees" :width="1280" show-summary :summary-method="handleSummary" size="small">
         <template slot-scope="{ row }" slot="name">
             <a :href="row.addresses"  target="_blank"> 名字:{{ row.name }}</a>
             <br/>
@@ -54,6 +54,10 @@
             <a @click="linkAdress(index)"  > 钱包</a>&nbsp;
             <a @click="linkContract(index)" > 支票</a>&nbsp;
         </template>
+        <template slot-scope="{ row,index }" slot="linkscan">
+            <a @click="linkBzzScanAdress(index)"  > 地址</a>&nbsp;
+            <a @click="linkBzzScan(index)"  > 支票</a>&nbsp;
+        </template>
 
     </i-table>
     <Card  style="width: 160px;position: absolute;right:5px;top:80px">
@@ -85,10 +89,13 @@
             return {
                 header: [
                     {
+                        type: 'index',
+                        width: 50
+                    },
+                    {
                         title: '节点',
                         key: 'name',
                         slot: 'name',
-
                     },
                     {
                         title: '状态',
@@ -119,7 +126,7 @@
                         sortable: true,
                         width: 100,
                         renderHeader: (h, params) => {
-                            console.log(params)
+                            // console.log(params)
                             return h('span', [
                                     h('span', {
                                         //<Icon type="md-help" />
@@ -148,6 +155,10 @@
                     },{
                         title: '区块浏览器',
                         slot: 'link',
+                        width: 120
+                    },{
+                        title: 'bzzscan',
+                        slot: 'linkscan',
                         width: 120
                     },
                 ],
@@ -215,12 +226,24 @@
                      window.open("https://goerli.etherscan.io/address/"+resp.data.chequebookaddress+"#tokentxns")
                 })
             },
+            linkBzzScan(index){
+                axios.get(this.bees[index].proxyUrl + '/chequebook/address').then(resp => {
+                    window.open("http://bzzscan.com/address/"+resp.data.chequebookaddress+"#tokentxns")
+                })
+            },
+            linkBzzScanAdress(index){
+                axios.get(this.bees[index].proxyUrl + '/addresses').then(resp => {
+                    window.open("http://bzzscan.com/address/"+resp.data.ethereum)
+                })
+            },
             cashout(index) {
                 this.bees[index].chequebookStatus = 2
                 let bee = this.bees[index];
                 let unCashoutPeers = bee.unCashoutPeers
                 axios.all(unCashoutPeers.map((peer,i) => {
-                    return axios.post(this.bees[index].proxyUrl + '/chequebook/cashout/' + unCashoutPeers[i])
+                    return axios.post(this.bees[index].proxyUrl + '/chequebook/cashout/' + unCashoutPeers[i],{},{
+                        headers: {'Gas-Price': '1000000000000'}
+                    })
                 })).then(
                     axios.spread((arr) => {
                         console.log(arr)
@@ -286,7 +309,7 @@
                     unCashoutPeers: [],
                     uncashBalance: 0,
                     balance: 0,
-                    proxyUrl: 'http://localhost/' + no,
+                    proxyUrl: location.origin+'/' + no,
                     ...bee
                 }
             })
@@ -301,9 +324,9 @@
                         this.bees[i].countPeers = resp.data.peers.length
                     })
 
-                    axios.get(this.bees[i].proxyUrl + '/chequebook/balance').then(resp => {
-                         console.log(this.bees[i].name +" :"+ JSON.stringify(resp.data))
-                    })
+                    // axios.get(this.bees[i].proxyUrl + '/chequebook/balance').then(resp => {
+                    //      console.log(this.bees[i].name +" :"+ JSON.stringify(resp.data))
+                    // })
                     axios.get(this.bees[i].proxyUrl + '/chequebook/cheque').then(resp => {
                         this.bees[i].countChequebook = 0
                         if (resp.data.lastcheques.length > 0) {
