@@ -1,9 +1,12 @@
 ﻿<!DOCTYPE html><html><head><meta charset="utf-8"><title>Swarm Dashboard</title>
-<!--    <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>-->
-    <script src="./lib/axios.min.js"></script>
-    <script src="./lib/vue.min.js"></script>
-    <link rel="stylesheet" href="./lib/iview.css">
-    <script src="./lib/iview.min.js"></script>
+    <!--    <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>-->
+    <script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+    <script src="//vuejs.org/js/vue.min.js"></script>
+    <!-- import stylesheet -->
+    <link rel="stylesheet" href="//unpkg.com/view-design/dist/styles/iview.css">
+    <!-- import iView -->
+    <script src="//unpkg.com/view-design/dist/iview.min.js"></script>
+    <!--    <meta http-equiv="Refresh" content="600">-->
 </head>
 <body>
 <div id="app">
@@ -12,13 +15,15 @@
         在线：<Tag color="success">{{bees.length-nodeErrorNum}}</Tag>
         离线 ：<Tag color="error">{{nodeErrorNum}}</Tag>
         支票总数 ：<Tag color="success">{{allCheque}}</Tag>
-        有效支票总数 ：<Tag color="success">{{toCheque}}</Tag>
-        无效支票总数 ：<Tag >{{allCheque -toCheque}}</Tag>
-<!--        gBZZ总额度 ：<Tag color="success">3.8</Tag>-->
-<!--         <i-button type="success">全部提取</i-button>-->
+        有效 ：<Tag color="success">{{toCheque}}</Tag>
+        无效 ：<Tag >{{allCheque -toCheque}}</Tag>
+        收到gBZZ ：<Tag >{{totalLastReceived/10000000000000000}}</Tag>
+        发出gBZZ ：<Tag >{{totalLastPay/10000000000000000}}</Tag>
+        <!--        gBZZ总额度 ：<Tag color="success">3.8</Tag>-->
+        <!--         <i-button type="success">全部提取</i-button>-->
     </Card>
     <br>
-    <i-table :columns="header" :data="bees" :width="1280" show-summary :summary-method="handleSummary" size="small">
+    <i-table :columns="header" :data="bees" :width="1280" size="small">
         <template slot-scope="{ row }" slot="name">
             <a :href="row.addresses"  target="_blank"> 名字:{{ row.name }}</a>
             <br/>
@@ -60,27 +65,13 @@
         </template>
 
     </i-table>
-    <Card  style="width: 160px;position: absolute;right:5px;top:80px">
-        <p slot="title">问题</p>
-        <p>1.区块浏览器需要梯子才能访问！ </p>
-        <p>2.待提现支票可能已经提过，可能是区块卡住.多提值为0！ </p>
-        <p>3.手动添加节点需要工具！ </p>
-        <p>4.刷新即可刷新页面数据！ </p>
-    </Card >
-    <!--    <h5>BEE 列表</h5>  <i-button>一键提票</i-button>&nbsp;-->
-    <!--    <div v-for="(bee,index) in bees" :key="index">-->
-    <!--        Bee {{index+1}} :-->
-    <!--        <span>version-{{bee.version}}</span>&nbsp;&nbsp;-->
-    <!--        <span>状态-{{bee.status}}</span>&nbsp;-->
+    <!--    <Card  style="width: 160px;position: absolute;right:5px;top:80px">-->
+    <!--        <p slot="title">问题</p>-->
+    <!--        <p>1.区块浏览器需要梯子才能访问！ </p>-->
+    <!--        <p>2.待提现支票可能已经提过，可能是区块卡住.多提值为0！ </p>-->
+    <!--        <p>3.刷新即可刷新页面数据！ </p>-->
+    <!--    </Card >-->
 
-    <!--        <a :href="bee.chequebook" target="_blank">支票({{bee.countChequebook}})</a>&nbsp;-->
-    <!--        <a :href="bee.peers" target="_blank">peers({{bee.countPeers}})</a>&nbsp;-->
-    <!--        <a :href="bee.chequebookaddr" target="_blank">支票地址</a>&nbsp;-->
-    <!--        <a :href="bee.addresses" target="_blank">钱包地址</a>&nbsp;-->
-    <!--        <a >待提现数量{{bee.unCashoutPeers ? bee.unCashoutPeers.length : 0}}</a>&nbsp;-->
-    <!--        <i-button @click="cashout">提票</i-button>-->
-
-    <!--    </div>-->
 </div>
 <script type="text/javascript">
     let router = new Vue({
@@ -96,6 +87,7 @@
                         title: '节点',
                         key: 'name',
                         slot: 'name',
+                        width: 150
                     },
                     {
                         title: '状态',
@@ -128,13 +120,13 @@
                         renderHeader: (h, params) => {
                             // console.log(params)
                             return h('span', [
-                                    h('span', {
-                                        //<Icon type="md-help" />
-                                        domProps: {
-                                            innerHTML: "支票"
-                                        }
-                                    }), h('a', {
+                                h('span', {
+                                    //<Icon type="md-help" />
                                     domProps: {
+                                        innerHTML: "支票"
+                                    }
+                                }), h('a', {
+                                        domProps: {
                                             title: "总数/有效/无效"
                                         }
                                     },"  ？"
@@ -166,6 +158,8 @@
                 nodeErrorNum:0,
                 toCheque:0,
                 allCheque:0,
+                totalLastReceived:0,
+                totalLastPay:0,
             }
         },
         methods: {
@@ -223,12 +217,12 @@
             },
             linkContract(index){
                 axios.get(this.bees[index].proxyUrl + '/chequebook/address').then(resp => {
-                     window.open("https://goerli.etherscan.io/address/"+resp.data.chequebookaddress+"#tokentxns")
+                    window.open("https://goerli.etherscan.io/address/"+(resp.data.chequebookaddress?resp.data.chequebookaddress:resp.data.chequebookAddress)+"#tokentxns")
                 })
             },
             linkBzzScan(index){
                 axios.get(this.bees[index].proxyUrl + '/chequebook/address').then(resp => {
-                    window.open("http://bzzscan.com/address/"+resp.data.chequebookaddress+"#tokentxns")
+                    window.open("http://bzzscan.com/address/"+(resp.data.chequebookaddress?resp.data.chequebookaddress:resp.data.chequebookAddress)+"#tokentxns")
                 })
             },
             linkBzzScanAdress(index){
@@ -266,98 +260,108 @@
         },
 
         mounted() {
-            axios.get('/MySwarm.conf').then(resp => {
+            axios.get('/MySwarm.conf' + '?t=' + new Date().getTime()).then(resp => {
                 let beesTempArrarr = resp.data.Swarm
                 beesTempArrarr.forEach(beesTemp => {
                     this.bees.push({
-                                name: beesTemp.Name,
-                                ip: beesTemp.Server,
-                                port: beesTemp.Port
-                            })
+                        name: beesTemp.Name,
+                        ip: beesTemp.Server,
+                        port: beesTemp.Port
+                    })
                 })
 
-            // for (let i = 1; i < 8; i++) {
-            //     this.bees.push({
-            //         name: "bee" +i,
-            //         ip: "127.0.0.1",
-            //         port: i+"635"
-            //     })}
+                // for (let i = 1; i < 8; i++) {
+                //     this.bees.push({
+                //         name: "bee" +i,
+                //         ip: "127.0.0.1",
+                //         port: i+"635"
+                //     })}
 
-            let tmp = "嘻嘻嘻 爱我吧"+"\n\n"
-            this.bees = this.bees.map((bee, index) => {
-                let no = index + 1;
-                let host = 'http://' + bee.ip + ':' + bee.port;
-                // console.log(host)
-                let ng = "   location  /"+no+"/  {  proxy_pass " +host+"/;}" +"\n"
-                // console.log(ng)
-                tmp=tmp+ng
-                return {
-                    chequebook: host + "/chequebook/cheque",
-                    peers: host + "/peers",
-                    addresses: host + "/addresses",
-                    chequebookaddr: host + "/chequebook/address",
-                    countPeers: 0,
-
-                    chequebookStatus: 0,
-                    status: 0,
-                    nodeNum: this.bees.length,
-                    nodeErrorNum: 0,
-                    version: "",
-                    countChequebook: 0,
-                    allChequebookNum: 0,
-                    chequebookPeers: [],
-                    unCashoutPeers: [],
-                    uncashBalance: 0,
-                    balance: 0,
-                    proxyUrl: location.origin+'/' + no,
-                    ...bee
-                }
-            })
-            console.log(tmp)
-            for (let i = 0; i < this.bees.length; i++) {
-                axios.get(this.bees[i].proxyUrl + '/health').then(resp => {
-                    this.bees[i].version = resp.data.version
-                    if(resp.data.status ==='ok'){
-                        this.bees[i].status = '良好'
+                let tmp = "嘻嘻嘻 爱我吧"+"\n\n"
+                this.bees = this.bees.map((bee, index) => {
+                    let no = index + 1;
+                    let host = 'http://' + bee.ip + ':' + bee.port;
+                    // console.log(host)
+                    let ng = "   location  /"+no+"/  {  proxy_pass " +host+"/;}" +"\n"
+                    // console.log(ng)
+                    tmp=tmp+ng
+                    return {
+                        chequebook: host + "/chequebook/cheque",
+                        peers: host + "/peers",
+                        addresses: host + "/addresses",
+                        chequebookaddr: host + "/chequebook/address",
+                        countPeers: 0,
+                        chequebookStatus: 0,
+                        status: 0,
+                        nodeNum: this.bees.length,
+                        nodeErrorNum: 0,
+                        version: "",
+                        countChequebook: 0,
+                        allChequebookNum: 0,
+                        chequebookPeers: [],
+                        unCashoutPeers: [],
+                        uncashBalance: 0,
+                        balance: 0,
+                        proxyUrl: location.origin+'/' + no,
+                        ...bee
                     }
-                    axios.get(this.bees[i].proxyUrl + '/peers').then(resp => {
-                        this.bees[i].countPeers = resp.data.peers.length
-                    })
+                })
+                console.log(tmp)
+                for (let i = 0; i < this.bees.length; i++) {
+                    axios.get(this.bees[i].proxyUrl + '/health').then(resp => {
+                        this.bees[i].version = resp.data.version
+                        if(resp.data.status ==='ok'){
+                            this.bees[i].status = '良好'
+                        }
+                        axios.get(this.bees[i].proxyUrl + '/peers').then(resp => {
+                            this.bees[i].countPeers = resp.data.peers.length
+                        })
 
-                    // axios.get(this.bees[i].proxyUrl + '/chequebook/balance').then(resp => {
-                    //      console.log(this.bees[i].name +" :"+ JSON.stringify(resp.data))
-                    // })
-                    axios.get(this.bees[i].proxyUrl + '/chequebook/cheque').then(resp => {
-                        this.bees[i].countChequebook = 0
-                        if (resp.data.lastcheques.length > 0) {
-                            this.bees[i].allChequebookNum  =  this.bees[i].allChequebookNum + resp.data.lastcheques.length
-                            let arr = resp.data.lastcheques
-                            if(resp.data.lastcheques){
-                                this.allCheque = this.allCheque + resp.data.lastcheques.length
-                            }
-                            arr.forEach(m => {
-                                if (m.lastreceived) {
-                                    this.toCheque++
-
-                                    this.bees[i].countChequebook++
-                                    this.bees[i].chequebookPeers.push({
-                                        peer: m.peer,
-                                        payOut: m.lastreceived.payout
-                                    })
+                        // axios.get(this.bees[i].proxyUrl + '/chequebook/balance').then(resp => {
+                        //      console.log(this.bees[i].name +" :"+ JSON.stringify(resp.data))
+                        // })
+                        axios.get(this.bees[i].proxyUrl + '/chequebook/cheque').then(resp => {
+                            this.bees[i].countChequebook = 0
+                            if (resp.data.lastcheques.length > 0) {
+                                this.bees[i].allChequebookNum  =  this.bees[i].allChequebookNum + resp.data.lastcheques.length
+                                let arr = resp.data.lastcheques
+                                if(resp.data.lastcheques){
+                                    this.allCheque = this.allCheque + resp.data.lastcheques.length
                                 }
-                            })
-                            // console.log(this.bees[i].chequebookPeers)
-                            if(this.bees[i].chequebookPeers.length === 0){
-                                this.bees[i].chequebookStatus = 1
-                            }
-                            // do then
-                            this.bees[i].chequebookPeers.forEach(trat => {
-                                axios.get(this.bees[i].proxyUrl + '/chequebook/cashout/' + trat.peer).then(resp => {
-                                    if (trat.payOut > resp.data.cumulativePayout) {
-                                        // console.log(trat.peer)
-                                        this.bees[i].unCashoutPeers.push(trat.peer)
+                                arr.forEach(m => {
+                                    if (m.lastreceived) {
+                                        this.toCheque++
+
+                                        this.bees[i].countChequebook++
+                                        this.bees[i].chequebookPeers.push({
+                                            peer: m.peer,
+                                            payOut: m.lastreceived.payout
+                                        })
+                                        this.totalLastReceived +=m.lastreceived.payout
                                     }
-                                }).catch(err => {
+                                    if (m.lastsent) {
+                                        this.totalLastPay +=m.lastsent.payout
+                                    }
+                                })
+                                // console.log(this.bees[i].chequebookPeers)
+                                if(this.bees[i].chequebookPeers.length === 0){
+                                    this.bees[i].chequebookStatus = 1
+                                }
+                                // do then
+                                this.bees[i].chequebookPeers.forEach(trat => {
+                                    axios.get(this.bees[i].proxyUrl + '/chequebook/cashout/' + trat.peer).then(resp => {
+                                        // console.log(this.bees[i].version)
+                                        // console.log(resp.data.uncashedAmount)
+
+                                        if (this.bees[i].version.search("0.5.") !== -1&& trat.payOut > resp.data.cumulativePayout) {
+                                            // console.log(trat.peer)
+                                            this.bees[i].unCashoutPeers.push(trat.peer)
+                                        }
+                                        if(this.bees[i].version.search("0.6.") !== -1 &&  resp.data.uncashedAmount >0){
+                                            this.bees[i].unCashoutPeers.push(trat.peer)
+                                        }
+                                    }).catch(err => {
+                                        // console.log(err)
                                         if (err.response.data.code === 404) {
                                             this.bees[i].unCashoutPeers.push(trat.peer)
                                         } else if (err.response.data.code === 500) {
@@ -365,38 +369,15 @@
                                         }
                                     })
 
-                            })
-                        }
+                                })
+                            }
+                        })
+                    }).catch(err=>{
+                        this.bees[i].status = '离线'
+                        this.nodeErrorNum++
                     })
-                }).catch(err=>{
-                    this.bees[i].status = '离线'
-                    this.nodeErrorNum++
-                })
-                this.bees[i].chequebookStatus = 1
-            }
-            // setTimeout(() => {
-            //     for (let i = 0; i < this.bees.length; i++) {
-            //         let chequebookPeers = this.bees[i].chequebookPeers
-            //         chequebookPeers.forEach(trat => {
-            //             axios.get(this.bees[i].proxyUrl + '/chequebook/cashout/' + trat.peer).then(resp => {
-            //                 if (trat.payOut > resp.data.cumulativePayout) {
-            //                     // console.log(trat.peer)
-            //                     this.bees[i].unCashoutPeers.push(trat.peer)
-            //                 }
-            //             })
-            //                 .catch(err => {
-            //                     if (err.response.data.code === 404) {
-            //                         this.bees[i].unCashoutPeers.push(trat.peer)
-            //                     } else if (err.response.data.code === 500) {
-            //                         this.bees[i].unCashoutPeers.push(trat.peer)
-            //                     }
-            //
-            //                 })
-            //         })
-            //         this.bees[i].chequebookStatus = 1
-            //     }
-            // }, 1500)
-
+                    this.bees[i].chequebookStatus = 1
+                }
             })
         }
 
