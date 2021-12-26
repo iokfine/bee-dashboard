@@ -15,14 +15,14 @@
 </head>
 <style>
     .ivu-table .demo-table-info-row td {
-        background-color: #93D6DF;
+        /*background-color: #93D6DF;*/
         /*color: #fff;*/
         /*border-top: solid 10px #e30a0a;*/
         /*border-bottom: solid 10px #e30a0a;*/
     }
 
     .ivu-table td {
-        background-color: #4990e0;
+        /*background-color: #4990e0;*/
         -webkit-transition: background-color .2s ease-in-out;
         transition: background-color .2s ease-in-out;
         border: none;
@@ -56,7 +56,8 @@
         /*background-color: #2aa198;*/
         border: none;
     }
-    .ivu-table:before{
+
+    .ivu-table:before {
         content: none;
     }
 
@@ -95,8 +96,9 @@
         /*margin-right: 10px;*/
         /*margin-top: 10px;*/
         /*margin-bottom: 20px;*/
-        background-color: #4990e0;
+        /*background-color: #4990e0;*/
     }
+
     .ivu-table {
         width: inherit;
         height: 100%;
@@ -106,108 +108,193 @@
         font-size: 14px;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
-        background-color: #4990e0;
+        /*background-color: #4990e0;*/
+        background-image: url('bg.jpg');
     }
 
+    .label_ {
+        text-align: center;
+        display: inline-block;
+        color: white;
+        opacity: .85;
+        /*line-height: 40px;*/
+    }
 </style>
 
-<body style="">
+<body style="text-align: center">
 <div id="app">
     <div>
-
-        <Row id='capture' type="flex" style="margin: 0 120px 0 120px;padding: 10px;width: 740px">
-            <i-col span="12" order="1">
-                <div class="borads"  style="border-right: 1px #1b181b solid">
-                    <img  style="width: 100%;" src="top.jpg"/>
-                    <i-table disabled-hover="false" height="450" align="center"
-                             :columns="header" :data="data1" :show-header="false"
-                             size="small" :row-class-name="rowClassName">
-                        <template slot-scope="{ row }" slot="Vl">
-                            <Tag style='background-color: #00cc66;' v-if="row.Vl <= 35 && row.Vl > 0">{{ row.Vl }}</Tag>
-                            <Tag style='background-color: #e7e400; ' v-if="row.Vl > 35  && row.Vl <= 75 ">
-                                {{row.Vl }}
-                            </Tag>
-                            <Tag style='background-color: #d9851e; ' v-if="row.Vl > 75 && row.Vl <= 115">{{ row.Vl }}
-                            </Tag>
-                            <Tag style='background-color: #f3061c; ' v-if="row.Vl > 115 ">{{ row.Vl }}</Tag>
-                            <Tag style='background-color: #58050d; ' v-if="row.Vl === 0">一</Tag>
-                        </template>
-                        <template slot-scope="{ row }" slot="PrimaryPollutant">
-                            <span v-if="row.PrimaryPollutant === '臭氧1小时'" style="font-size: 11px">O<span style="font-size: 7px">3</span></span>
-                            <span v-if="row.PrimaryPollutant === '颗粒物(PM10)'" style="font-size: 11px">PM<span
-                                    style="font-size: 8px">10</span></span>
-                            <span v-if="row.PrimaryPollutant === '细颗粒物(PM2.5)'" style="font-size: 11px">PM<span style="font-size: 8px">25</span></span>
-                            <span v-if="row.PrimaryPollutant === '颗粒物(PM10),细颗粒物(PM2.5)'" style="font-size: 11px">
-                                PM<span style="font-size: 7px">10</span>,
-                                PM<span style="font-size: 7px">25</span>
-                            </span>
-                            <span v-if="row.PrimaryPollutant === '—'" style="font-size: 11px">
-                                 {{row.PrimaryPollutant }}
-                            </span>
-                        </template>
-                        <template slot-scope="{ row }" slot="SortID">
-                            <span style="font-size: 16px;opacity: .8">{{row.SortID}}</span>
-                        </template>
-                        <template slot-scope="{ row }" slot="StationName">
-                            <span style="font-size: 11px;opacity: .8">{{row.StationName}}</span>
-                            <span :id="row.StationName + 1" ></span>
-                        </template>
-                    </i-table>
-                    <div class="footer">
-                        <div style="font-size: 14px;margin-top: 5px;background-color: #93D6DF;  border-radius: 5px;width: 80px;padding-left: 15px">PM<span style="font-size: 6px">2.5</span></div>
-                        <div style="margin-top: 5px">今天 {{date.getHours()}}:00 更新</div>
+        <Row v-if="!image" id='capture' type="flex" style="margin: 0 120px 0 120px;padding: 10px;width: 740px">
+            <i-col :span="12">
+                <div class="borads" style="border-right: 1px #1b181b solid">
+                    <img style="width: 100%;" src="top.jpg"/>
+                    <ul style="background-image: url('bg.jpg');height: 486px;overflow:auto;background-size:100%;margin-top: -5px;">
+                        <li v-for="row in data1">
+                            <div style="height: 50px;border: solid 4px red;display: flex; align-items: center;" v-if="row.StationName.includes('定南县')">
+                                <div style="width: 60px;;display: inline-block;line-height: 42px;text-align: center">
+                                    <span class="label_" style="font-size: 18px;">{{row.SortID}}</span>
+                                </div>
+                                <div class="label_" style="font-size: 16px;;width: 65px;">{{row.CityName}}</div>
+                                <div class="label_" style="font-size: 12px;;width: 95px;;">{{row.StationName}}</div>
+                                <div class="label_" style="font-size: 16px;;width: 55px;">
+                                    <Tag style='background-color: #00cc66;' v-if="row.Vl <= 35 && row.Vl > 0">{{ row.Vl }}</Tag>
+                                <Tag style='background-color: #e7e400; ' v-if="row.Vl > 35  && row.Vl <= 75 ">
+                                    {{row.Vl }}
+                                </Tag>
+                                <Tag style='background-color: #d9851e; ' v-if="row.Vl > 75 && row.Vl <= 115">{{ row.Vl }}
+                                </Tag>
+                                <Tag style='background-color: #f3061c; ' v-if="row.Vl > 115 ">{{ row.Vl }}</Tag>
+                                <Tag style='background-color: #58050d; ' v-if="row.Vl === 0">一</Tag>
+                                </div>
+                                <div class="label_" style="font-size: 16px;;width: 50px;">
+                                        <span v-if="row.PrimaryPollutant === '臭氧1小时'" style="font-size: 11px;">O<span
+                                                style="font-size: 7px">3</span></span>
+                                        <span v-if="row.PrimaryPollutant === '颗粒物(PM10)'"
+                                              style="font-size: 11px">PM<span
+                                                style="font-size: 8px">10</span></span>
+                                        <span v-if="row.PrimaryPollutant === '细颗粒物(PM2.5)'"
+                                              style="font-size: 11px">PM<span style="font-size: 8px">25</span></span>
+                                        <span v-if="row.PrimaryPollutant === '颗粒物(PM10),细颗粒物(PM2.5)'"
+                                              style="font-size: 11px">
+                                            PM<span style="font-size: 7px">10</span>,
+                                            PM<span style="font-size: 7px">25</span>
+                                        </span>
+                                        <span v-if="row.PrimaryPollutant === '—'" style="font-size: 11px">
+                                             {{row.PrimaryPollutant }}
+                                        </span>
+                                </div>
+                            </div>
+                            <div style="height: 50px;padding: 4px;display: flex; align-items: center;" v-if="!row.StationName.includes('定南县')">
+                                <div style="width: 60px;;display: inline-block;line-height: 42px;text-align: center">
+                                    <span class="label_" style="font-size: 18px;">{{row.SortID}}</span>
+                                </div>
+                                <div class="label_" style="font-size: 16px;;width: 65px;">{{row.CityName}}</div>
+                                <div class="label_" style="font-size: 12px;;width: 95px;;">{{row.StationName}}</div>
+                                <div class="label_" style="font-size: 16px;;width: 55px;">
+                                    <Tag style='background-color: #00cc66;' v-if="row.Vl <= 35 && row.Vl > 0">{{ row.Vl }}</Tag>
+                                    <Tag style='background-color: #e7e400; ' v-if="row.Vl > 35  && row.Vl <= 75 ">
+                                        {{row.Vl }}
+                                    </Tag>
+                                    <Tag style='background-color: #d9851e; ' v-if="row.Vl > 75 && row.Vl <= 115">{{ row.Vl }}
+                                    </Tag>
+                                    <Tag style='background-color: #f3061c; ' v-if="row.Vl > 115 ">{{ row.Vl }}</Tag>
+                                    <Tag style='background-color: #58050d; ' v-if="row.Vl === 0">一</Tag>
+                                </div>
+                                <div class="label_" style="font-size: 16px;;width: 50px;">
+                                        <span v-if="row.PrimaryPollutant === '臭氧1小时'" style="font-size: 11px;">O<span
+                                                style="font-size: 7px">3</span></span>
+                                    <span v-if="row.PrimaryPollutant === '颗粒物(PM10)'"
+                                          style="font-size: 11px">PM<span
+                                            style="font-size: 8px">10</span></span>
+                                    <span v-if="row.PrimaryPollutant === '细颗粒物(PM2.5)'"
+                                          style="font-size: 11px">PM<span style="font-size: 8px">25</span></span>
+                                    <span v-if="row.PrimaryPollutant === '颗粒物(PM10),细颗粒物(PM2.5)'"
+                                          style="font-size: 11px">
+                                            PM<span style="font-size: 7px">10</span>,
+                                            PM<span style="font-size: 7px">25</span>
+                                        </span>
+                                    <span v-if="row.PrimaryPollutant === '—'" style="font-size: 11px">
+                                             {{row.PrimaryPollutant }}
+                                        </span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div style="position: relative">
+                        <div style="font-size: 12px; position: absolute; top: 80%; margin: -103px 0 0 0;left: 12px; line-height: 100px;color: white;opacity: .9;">
+                            今天 {{date.getHours()}}:00 更新
+                        </div>
+                        <img style="width: 100%;vertical-align: bottom;" src="bott.png"/>
                     </div>
-                    <img  style="width: 100%;vertical-align: bottom;" src="bott.jpg"/>
                 </div>
             </i-col>
-            <i-col span="12" order="2">
-                <div class="borads" style="border-left: 1px #1b181b solid">
-                    <img  style="width: 100%;" src="top.jpg"/>
-                    <i-table disabled-hover="false" height="450" align="center"
-                             :columns="header" :data="data2" :show-header="false"
-                             size="small" :row-class-name="rowClassName">
-                        <template slot-scope="{ row }" slot="Vl">
-                            <Tag style='background-color: #00cc66;' v-if="row.Vl <= 35 && row.Vl > 0">{{ row.Vl }}</Tag>
-                            <Tag style='background-color: #e7e400; ' v-if="row.Vl > 35  && row.Vl <= 75 ">
-                                {{row.Vl }}
-                            </Tag>
-                            <Tag style='background-color: #d9851e; ' v-if="row.Vl > 75 && row.Vl <= 115">{{ row.Vl }}
-                            </Tag>
-                            <Tag style='background-color: #f3061c; ' v-if="row.Vl > 115 ">{{ row.Vl }}</Tag>
-                            <Tag style='background-color: #58050d; ' v-if="row.Vl === 0">一</Tag>
-                        </template>
-                        <template slot-scope="{ row }" slot="PrimaryPollutant">
-                            <span v-if="row.PrimaryPollutant === '臭氧1小时'" style="font-size: 11px;">O<span style="font-size: 7px">3</span></span>
-                            <span v-if="row.PrimaryPollutant === '颗粒物(PM10)'" style="font-size: 11px">PM<span
-                                    style="font-size: 8px">10</span></span>
-                            <span v-if="row.PrimaryPollutant === '细颗粒物(PM2.5)'" style="font-size: 11px">PM<span style="font-size: 8px">25</span></span>
-                            <span v-if="row.PrimaryPollutant === '颗粒物(PM10),细颗粒物(PM2.5)'" style="font-size: 11px">
-                                PM<span style="font-size: 7px">10</span>,
-                                PM<span style="font-size: 7px">25</span>
-                            </span>
-                            <span v-if="row.PrimaryPollutant === '—'" style="font-size: 11px">
-                                 {{row.PrimaryPollutant }}
-                            </span>
-                        </template>
-                        <template slot-scope="{ row }" slot="SortID">
-                            <span style="font-size: 16px;opacity: .8">{{row.SortID}}</span>
-                        </template>
-                        <template slot-scope="{ row }" slot="StationName">
-                            <span style="font-size: 11px;opacity: .8">{{row.StationName}}</span>
-                            <span :id="row.StationName + 1" ></span>
-                        </template>
-                    </i-table>
-                    <div class="footer">
-                        <div style="font-size: 14px;margin-top: 5px;background-color: #93D6DF;  border-radius: 5px;width: 80px;padding-left: 15px">PM<span style="font-size: 6px">2.5</span></div>
-                        <div style="margin-top: 5px">今天 {{date.getHours()}}:00 更新</div>
+            <i-col :span="12">
+                <div class="borads" style="border-right: 1px #1b181b solid">
+                    <img style="width: 100%;" src="top.jpg"/>
+                    <ul style="background-image: url('bg.jpg');height: 486px;overflow:auto;background-size:100%;margin-top: -5px;">
+                        <li v-for="row in data2">
+                            <div style="height: 50px;border: solid 4px red;display: flex; align-items: center;" v-if="row.StationName.includes('定南县')">
+                                <div style="width: 60px;;display: inline-block;line-height: 42px;text-align: center">
+                                    <span class="label_" style="font-size: 18px;">{{row.SortID}}</span>
+                                </div>
+                                <div class="label_" style="font-size: 16px;;width: 65px;">{{row.CityName}}</div>
+                                <div class="label_" style="font-size: 12px;;width: 95px;;">{{row.StationName}}</div>
+                                <div class="label_" style="font-size: 16px;;width: 55px;">
+                                    <Tag style='background-color: #00cc66;' v-if="row.Vl <= 35 && row.Vl > 0">{{ row.Vl }}</Tag>
+                                    <Tag style='background-color: #e7e400; ' v-if="row.Vl > 35  && row.Vl <= 75 ">
+                                        {{row.Vl }}
+                                    </Tag>
+                                    <Tag style='background-color: #d9851e; ' v-if="row.Vl > 75 && row.Vl <= 115">{{ row.Vl }}
+                                    </Tag>
+                                    <Tag style='background-color: #f3061c; ' v-if="row.Vl > 115 ">{{ row.Vl }}</Tag>
+                                    <Tag style='background-color: #58050d; ' v-if="row.Vl === 0">一</Tag>
+                                </div>
+                                <div class="label_" style="font-size: 16px;;width: 50px;">
+                                        <span v-if="row.PrimaryPollutant === '臭氧1小时'" style="font-size: 11px;">O<span
+                                                style="font-size: 7px">3</span></span>
+                                    <span v-if="row.PrimaryPollutant === '颗粒物(PM10)'"
+                                          style="font-size: 11px">PM<span
+                                            style="font-size: 8px">10</span></span>
+                                    <span v-if="row.PrimaryPollutant === '细颗粒物(PM2.5)'"
+                                          style="font-size: 11px">PM<span style="font-size: 8px">25</span></span>
+                                    <span v-if="row.PrimaryPollutant === '颗粒物(PM10),细颗粒物(PM2.5)'"
+                                          style="font-size: 11px">
+                                            PM<span style="font-size: 7px">10</span>,
+                                            PM<span style="font-size: 7px">25</span>
+                                        </span>
+                                    <span v-if="row.PrimaryPollutant === '—'" style="font-size: 11px">
+                                             {{row.PrimaryPollutant }}
+                                        </span>
+                                </div>
+                            </div>
+                            <div style="height: 50px;padding: 4px; display: flex; align-items: center;" v-if="!row.StationName.includes('定南县')">
+                                <div style="width: 60px;;display: inline-block;line-height: 42px;text-align: center">
+                                    <span class="label_" style="font-size: 18px;">{{row.SortID}}</span>
+                                </div>
+                                <div class="label_" style="font-size: 16px;;width: 65px;">{{row.CityName}}</div>
+                                <div class="label_" style="font-size: 12px;;width: 95px;;">{{row.StationName}}</div>
+                                <div class="label_" style="font-size: 16px;;width: 55px;">
+                                    <Tag style='background-color: #00cc66;' v-if="row.Vl <= 35 && row.Vl > 0">{{ row.Vl }}</Tag>
+                                    <Tag style='background-color: #e7e400; ' v-if="row.Vl > 35  && row.Vl <= 75 ">
+                                        {{row.Vl }}
+                                    </Tag>
+                                    <Tag style='background-color: #d9851e; ' v-if="row.Vl > 75 && row.Vl <= 115">{{ row.Vl }}
+                                    </Tag>
+                                    <Tag style='background-color: #f3061c; ' v-if="row.Vl > 115 ">{{ row.Vl }}</Tag>
+                                    <Tag style='background-color: #58050d; ' v-if="row.Vl === 0">一</Tag>
+                                </div>
+                                <div class="label_" style="font-size: 16px;;width: 50px;">
+                                        <span v-if="row.PrimaryPollutant === '臭氧1小时'" style="font-size: 11px;">O<span
+                                                style="font-size: 7px">3</span></span>
+                                    <span v-if="row.PrimaryPollutant === '颗粒物(PM10)'"
+                                          style="font-size: 11px">PM<span
+                                            style="font-size: 8px">10</span></span>
+                                    <span v-if="row.PrimaryPollutant === '细颗粒物(PM2.5)'"
+                                          style="font-size: 11px">PM<span style="font-size: 8px">25</span></span>
+                                    <span v-if="row.PrimaryPollutant === '颗粒物(PM10),细颗粒物(PM2.5)'"
+                                          style="font-size: 11px">
+                                            PM<span style="font-size: 7px">10</span>,
+                                            PM<span style="font-size: 7px">25</span>
+                                        </span>
+                                    <span v-if="row.PrimaryPollutant === '—'" style="font-size: 11px">
+                                             {{row.PrimaryPollutant }}
+                                        </span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div style="position: relative">
+                        <div style="font-size: 12px; position: absolute; top: 80%; margin: -103px 0 0 0;left: 12px; line-height: 100px;color: white;opacity: .9;">
+                            今天 {{date.getHours()}}:00 更新
+                        </div>
+                        <img style="width: 100%;vertical-align: bottom;" src="bott.png"/>
                     </div>
-                    <img  style="width: 100%;vertical-align: bottom;" src="bott.jpg"/>
                 </div>
             </i-col>
         </Row>
         <div style="text-align: center;">
-            <a @click="generatImage" style="padding:20px 0 20px 20px;font-size: 28px">生成图片</a>
-<!--            <a @click="downImg" style="padding:20px 0 20px 20px;font-size: 28px">下载</a>-->
+            <span  style="padding:20px 0 20px 20px;font-size: 28px;"> </span>
+            <!--            <a @click="downImg" style="padding:20px 0 20px 20px;font-size: 28px">下载</a>-->
         </div>
     </div>
 
@@ -254,8 +341,11 @@
                 ],
                 data: [],
                 data1: [],
+                data1_span: 12,
                 data2: [],
-                date: new Date()
+                data2_span: 12,
+                date: new Date(),
+                image:false
             }
         },
         methods: {
@@ -265,22 +355,24 @@
                     console.log(resp.data)
                     this.data = resp.data
                     let cut = 4
-                    let index1 = 0
-                    let index2 = 0
+                    let index1 = 4
+                    let index2 = 4
                     for (let i = 0; i < this.data.length; i++) {
                         this.data1[i] = this.data[i]
                         this.data2[i] = this.data[i]
-                        if(this.data[i].StationName === '定南县残联康复中心' && i > cut){
+                        if(this.data[i].StationName === '定南县残联康复中心' && i >= cut){
                             index1 = i
                         }
-                        if(this.data[i].StationName === '定南县环保局' && i > cut){
+                        if(this.data[i].StationName === '定南县环保局' && i >= cut){
                             index2 = i
                         }
                     }
                     this.data1 = this.data1.splice(index1 - cut,this.data1.length - index1 + cut)
-                    console.log(this.data2)
                     this.data2 = this.data2.splice(index2 - cut,this.data2.length - index2 + cut)
-                    console.log(this.data2)
+                    document.getElementById("capture").style.width="370px";
+                    setTimeout(()=>{
+                        this.generatImage()
+                    },10)
                 })
             },
             rowClassName(row, index) {
@@ -289,7 +381,7 @@
                 }
                 return '';
             },
-            downImg(){
+            downImg() {
                 html2canvas(document.querySelector("#capture")).then(canvas => {
                     const url = canvas.toDataURL("image/png")
                     console.log(url)
@@ -298,15 +390,17 @@
                     elementA.href = url
                     elementA.click()
                     elementA.remove()
+
                 });
             },
             generatImage() {
                 html2canvas(document.querySelector("#capture")).then(canvas => {
                     var image = new Image();
                     image.src = canvas.toDataURL("image/png");
-                    image.width = document.body.clientWidth;
+                    image.width = 740;
                     document.body.appendChild(image)
                     canvas.remove()
+                    this.image  =true
                 });
 
             }
