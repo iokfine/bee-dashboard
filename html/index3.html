@@ -5,12 +5,13 @@
     <title>江西省控PM2.5排名</title>
     <!--    <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>-->
     <script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
-    <script src="https://cdn.staticfile.org/vue/2.5.18/vue.min.js"></script>
+    <script src="//vuejs.org/js/vue.min.js"></script>
     <!-- import stylesheet -->
     <link rel="stylesheet" href="//unpkg.com/view-design/dist/styles/iview.css">
     <!-- import iView -->
     <script src="//unpkg.com/view-design/dist/iview.min.js"></script>
     <script src="http://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="../../../nicolas/fmz/【币安现货】MA5MA20均线现货策略.js"></script>
     <!--    <meta http-equiv="Refresh" content="600">-->
 </head>
 <style>
@@ -121,11 +122,12 @@
     }
 </style>
 
-<body style="text-align: center">
+<body style="">
 <div id="app">
     <div>
-        <Row v-if="!image" id='capture' type="flex" style="margin: 0 120px 0 120px;padding: 10px;width: 740px">
-            <i-col :span="12">
+
+        <Row id='capture' type="flex" style="margin: 0 120px 0 120px;padding: 10px;width: 740px">
+            <i-col span="12">
                 <div class="borads" style="border-right: 1px #1b181b solid">
                     <img style="width: 100%;" src="top.jpg"/>
                     <ul style="background-image: url('bg.jpg');height: 486px;overflow:auto;background-size:100%;margin-top: -5px;">
@@ -208,7 +210,7 @@
                     </div>
                 </div>
             </i-col>
-            <i-col :span="12">
+            <i-col span="12">
                 <div class="borads" style="border-right: 1px #1b181b solid">
                     <img style="width: 100%;" src="top.jpg"/>
                     <ul style="background-image: url('bg.jpg');height: 486px;overflow:auto;background-size:100%;margin-top: -5px;">
@@ -293,7 +295,7 @@
             </i-col>
         </Row>
         <div style="text-align: center;">
-            <span  style="padding:20px 0 20px 20px;font-size: 28px;"> </span>
+            <span  style="padding:20px 0 20px 20px;font-size: 28px;">图片结果</span>
             <!--            <a @click="downImg" style="padding:20px 0 20px 20px;font-size: 28px">下载</a>-->
         </div>
     </div>
@@ -341,11 +343,8 @@
                 ],
                 data: [],
                 data1: [],
-                data1_span: 12,
                 data2: [],
-                data2_span: 12,
-                date: new Date(),
-                image:false
+                date: new Date()
             }
         },
         methods: {
@@ -369,7 +368,6 @@
                     }
                     this.data1 = this.data1.splice(index1 - cut,this.data1.length - index1 + cut)
                     this.data2 = this.data2.splice(index2 - cut,this.data2.length - index2 + cut)
-                    document.getElementById("capture").style.width="370px";
                     setTimeout(()=>{
                         this.generatImage()
                     },10)
@@ -390,14 +388,13 @@
                     elementA.href = url
                     elementA.click()
                     elementA.remove()
-
                 });
             },
             generatImage() {
                 html2canvas(document.querySelector("#capture")).then(canvas => {
                     var image = new Image();
                     image.src = canvas.toDataURL("image/png");
-                    image.width = 740;
+                    image.width = 900;
                     document.body.appendChild(image)
                     canvas.remove()
                     this.image  =true
