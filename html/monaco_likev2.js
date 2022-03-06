@@ -164,7 +164,7 @@ function handle() {
     // autoSellStatus.addEventListener( 'click', function(){this.children[0].textContent = 'Auto-Sell Active';})
     let autoSellContent = document.createElement('div');
     autoSellContent.style.cssText = 'background-color: #fde7e3; padding-left: 10px; padding-right: 10px';
-    autoSellContent.textContent = '菜单';
+    // autoSellContent.textContent = '菜单';
     let resetBut = document.createElement('button');
     resetBut.style.cssText = 'background-color: #fde7e3; padding-left: 10px; padding-right: 10px';
     // resetBut.href = '#';
@@ -178,7 +178,7 @@ function handle() {
     let startBut = document.createElement('button');
     startBut.style.cssText = 'background-color: #fde7e3; padding-left: 10px; padding-right: 10px';
     // startBut.href = '#';
-    startBut.textContent = '同步';
+    startBut.textContent = '任务';
     startBut.addEventListener('click', function () {
         // Toast("同步成功", 2000)
         // getUsers().then(res => {
@@ -192,32 +192,61 @@ function handle() {
             Toast(resp.data)
         })
     })
-    let stopBut = document.createElement('button');
-    stopBut.style.cssText = 'background-color: #fde7e3; padding-left: 10px; padding-right: 10px';
-    // stopBut.href = '#';
-    stopBut.textContent = '点赞';
-    stopBut.addEventListener('click', function () {
-        // db.set("likeusers", [window.location.href.split('/')[3]])
-        // db.set('clicklimit', 10)
-        // launch()
-        let ouid = window.location.href.split('/')[3]
-        addTask(uid, 1, ouid).then(resp=>{
-            Toast(resp.data)
-        })
-
-    })
+    // let stopBut = document.createElement('button');
+    // stopBut.style.cssText = 'background-color: #fde7e3; padding-left: 10px; padding-right: 10px';
+    // // stopBut.href = '#';
+    // stopBut.textContent = '点赞';
+    // stopBut.addEventListener('click', function () {
+    //     // db.set("likeusers", [window.location.href.split('/')[3]])
+    //     // db.set('clicklimit', 10)
+    //     // launch()
+    //     let ouid = window.location.href.split('/')[3]
+    //     addTask(uid, 1, ouid).then(resp=>{
+    //         Toast(resp.data)
+    //     })
+    // })
     let LoopLikeBut = document.createElement('button');
     LoopLikeBut.style.cssText = 'background-color: #fde7e3; padding-left: 10px; padding-right: 10px';
-    // LoopLikeBut.href = '#';
-    LoopLikeBut.textContent = '直接点';
+    LoopLikeBut.textContent = '点赞';
     LoopLikeBut.addEventListener('click', function () {
+        log('点赞开始')
+        Toast("点赞开始", 3000)
        loopLike()
+    })
+    let comment_ = document.createElement('button');
+    comment_.style.cssText = 'background-color: #fde7e3; padding-left: 10px; padding-right: 10px';
+    comment_.textContent = '评论';
+    comment_.addEventListener('click', function () {
+        getCommentList().then(res => {
+            let comments = res.data
+            let index = Math.floor(Math.random() * Math.floor(comments.length))
+            document.getElementsByClassName('ProseMirror')[0].getElementsByTagName('p')[0].textContent = comments[index]
+            sleep(500).then(() => {
+                document.getElementsByClassName('el-button el-button--text')[0].click()
+                console.log('评论成功' + format(new Date()))
+            })
+        })
+    })
+    let e_ = document.createElement('button');
+    e_.style.cssText = 'background-color: #fde7e3; padding-left: 10px; padding-right: 10px';
+    e_.textContent = 'e';
+    e_.addEventListener('click', function () {
+        location.href = 'https://monaconft.io/ethfans/posts'
+    })
+    let c_ = document.createElement('button');
+    c_.style.cssText = 'background-color: #fde7e3; padding-left: 10px; padding-right: 10px';
+    c_.textContent = 'c';
+    c_.addEventListener('click', function () {
+        location.href = 'https://monaconft.io/chrissangmi/posts'
     })
     autoSellStatus.appendChild(autoSellContent);
     autoSellStatus.appendChild(startBut);
-    autoSellStatus.appendChild(stopBut);
+    // autoSellStatus.appendChild(stopBut);
     autoSellStatus.appendChild(resetBut);
+    autoSellStatus.appendChild(comment_);
     autoSellStatus.appendChild(LoopLikeBut);
+    autoSellStatus.appendChild(e_);
+    autoSellStatus.appendChild(c_);
     document.body.prepend(autoSellStatus);
 }
 
@@ -225,7 +254,7 @@ handle()
 
 let count = 1
 let herfold = location.href
-db.set('clicklimit', Math.floor(Math.random() * Math.floor(4)) + 3)
+db.set('clicklimit', Math.floor(Math.random() * Math.floor(1)) + 3)
 
 function dotask() {
     let limit = db.get('clicklimit')
@@ -295,24 +324,26 @@ function dotask() {
 }
 let loopLikeUrl = ''
 function loopLike() {
-    if(db.get('loopLikeUrl')){
-        if(db.get('loopLikeUrl') !== location.href){
-            db.del('loopLikeUrl')
-            return
-        }
-    }else {
-        db.set('loopLikeUrl',location.href)
-    }
+    // if(db.get('loopLikeUrl')){
+    //     if(db.get('loopLikeUrl') !== location.href){
+    //         db.del('loopLikeUrl')
+    //         return
+    //     }
+    // }else {
+    //     db.set('loopLikeUrl',location.href)
+    // }
     let radom = Math.floor(Math.random() * Math.floor(5000)) + 10000
     let like = document.getElementsByClassName('iconfont cursor-pointer bottom-icon text-info icon-like')
-    if (like && like[0]) {
+    if (like && like.length > 0&& like[0].parentNode) {
         sleep(radom).then(() => {
             like[0].parentNode.click()
             Toast('点赞', 3000)
+            log('点赞')
             loopLike();
         })
     }else{
         Toast('点完了')
+        log("点完了")
     }
 
 }
@@ -353,4 +384,6 @@ function launch() {
         })
     }, 60000)
 }
+
+launch()
 
