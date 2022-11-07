@@ -1,0 +1,4 @@
+rpc: https://rpc.kiln.themerge.dev
+chain id : 1337802
+
+汇集网站：https://cointool.app/oldBatchCollection/eth

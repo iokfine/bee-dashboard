@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Faucet Dashboard</title>
+    <!--    <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>-->
+    <script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+    <!-- 引入Vue -->
+    <script src="https://cdn.staticfile.org/vue/2.6.5/vue.min.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/element-ui/2.15.7/theme-chalk/index.min.css">
+    <!-- 引入组件库 -->
+    <script src="https://cdn.staticfile.org/element-ui/2.15.7/index.min.js"></script>
+
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header>
+
+        </el-header>
+
+        <el-main>
+            <div style="text-align: center">
+                <el-card class="box-card" style="width: 1000px;">
+                    <div slot="header" class="clearfix">
+                        <span>信息 {{msg}} </span>
+                        <!--                    <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
+                    </div>
+                    <div style="text-align: center">
+                        <div>余额 {{info.balance }}</div>
+                        <div>验证码调用总次数 {{info.captchaTimes }}</div>
+                        <div>申请领水次数 {{info.applyETHTimes }}</div>
+                        <div>过去1小时领水次数 {{info.hourAgoApplyTimes }}</div>
+                        <div>过去4小时领水次数 {{info.fourHourAgoApplyTimes }}</div>
+                        <div>今日领水次数 {{info.dayAgoApplyTimes }}</div>
+                        <div>钱包总数 {{info.addrNum }}</div>
+                        <div>归集地址 {{info.mainAddr }}</div>
+                        <div>上次查询 {{info.preQuery }}</div>
+                        <div>{{info.otherInfo }}</div>
+                        <div>更新于 {{info.updateTime}}</div>
+                        <el-divider></el-divider>
+                        <el-button type="primary" @click="sendMessage('1')" :loading="queryLoading">查询余额</el-button>
+                        <el-button type="primary" @click="sendMessage('2')" :loading="queryLoading">全部归集</el-button>
+                        <div>结果 {{queryResult}}</div>
+                    </div>
+
+
+                </el-card>
+            </div>
+        </el-main>
+        <el-footer>-</el-footer>
+    </el-container>
+    <!--    <i-card>-->
+    <!--                 <i-button type="success">全部提取</i-button>-->
+    <!--    </i-card>-->
+</div>
+<script type="text/javascript">
+    let socket
+    let router = new Vue({
+        el: '#app',
+        data() {
+            return {
+                msg: '',
+                info: {
+                    balance: "加载中",
+                    captchaTimes: "加载中",
+                    applyETHTimes: "加载中",
+                    mainAddr: "加载中",
+                    addrNum: "加载中",
+                    otherInfo: "加载中",
+                    hourAgoApplyTimes: "加载中",
+                    fourHourAgoApplyTimes: "加载中",
+                    dayAgoApplyTimes: "加载中",
+                    updateTime: "",
+                    preQuery: "加载中",
+                },
+                queryResult: "-",
+                queryLoading: false,
+                collectLoading: false,
+            }
+        },
+        methods: {
+            openSocket() {
+                const socketUrl = "ws://localhost:8080/api/pushMessage";
+                console.log(socketUrl);
+                if (socket != null) {
+                    socket.close();
+                    socket = null;
+                }
+                socket = new WebSocket(socketUrl);
+                //打开事件
+                socket.onopen = function () {
+                    console.log("websocket已打开");
+                };
+                //获得消息事件
+                socket.onmessage = (msg) => {
+                    // console.log(msg.data);
+                    //发现消息进入,开始处理前端触发逻辑
+                    let rsp = JSON.parse(msg.data)
+                    switch (rsp.type) {
+                        case 9:
+                            this.msg = rsp.data.infoMsg
+                            this.info = rsp.data
+                            this.info.updateTime = this.format(new Date())
+                            break
+                        case 10:
+                            // console.log(rsp.data.applyETHTimes)
+                            // console.log(this.info.applyETHTimes)
+                            this.$message('新增提交 +'+(rsp.data.applyETHTimes -this.info.applyETHTimes)  +'次');
+                            this.info.applyETHTimes = rsp.data.applyETHTimes
+                            this.info.balance = rsp.data.balance
+                            this.info.captchaTimes = rsp.data.captchaTimes
+                            this.info.updateTime = this.format(new Date())
+                            this.info.hourAgoApplyTimes = rsp.data.hourAgoApplyTimes
+                            this.info.fourHourAgoApplyTimes = rsp.data.fourHourAgoApplyTimes
+                            this.info.dayAgoApplyTimes = rsp.data.dayAgoApplyTimes
+                            this.info.preQuery = rsp.data.preQuery
+                            break
+                        case 11:
+                        case 12:
+                            this.queryResult = rsp.data.queryResult
+                            if (rsp.data.over) {
+                                this.queryLoading = false
+                                this.$message(rsp.data.queryResult);
+                            }
+                            break
+                        default:
+                            break
+                    }
+                };
+                //关闭事件
+                socket.onclose = (msg) =>  {
+                    console.log("websocket已关闭");
+                    this.msg = "连接服务器失败"
+                };
+                //发生了错误事件
+                socket.onerror = function () {
+                    console.log("websocket发生了错误");
+                }
+            }
+            ,
+            sendMessage(type) {
+                if (type === 1) {
+                    this.msg = "查询中"
+                } else if (type === 2) {
+                    this.msg = "归集中"
+                }
+                socket.send(type);
+                this.queryLoading = true;
+            },
+            //格式化时间
+            format(dat) {
+                //获取年月日，时间
+                var year = dat.getFullYear();
+                var mon = (dat.getMonth() + 1) < 10 ? "0" + (dat.getMonth() + 1) : dat.getMonth() + 1;
+                var data = dat.getDate() < 10 ? "0" + (dat.getDate()) : dat.getDate();
+                var hour = dat.getHours() < 10 ? "0" + (dat.getHours()) : dat.getHours();
+                var min = dat.getMinutes() < 10 ? "0" + (dat.getMinutes()) : dat.getMinutes();
+                var seon = dat.getSeconds() < 10 ? "0" + (dat.getSeconds()) : dat.getSeconds();
+
+                var newDate = year + "-" + mon + "-" + data + " " + hour + ":" + min + ":" + seon;
+                return newDate;
+            }
+        }
+        ,
+
+        mounted() {
+            this.openSocket()
+        }
+
+    })
+</script>
+</body>
+</html>

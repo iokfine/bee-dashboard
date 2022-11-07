@@ -137,7 +137,7 @@ function send(msg,token,channalId) {
         var xhr = new XMLHttpRequest(); //这里没有考虑IE浏览器，如果需要择if判断加
         xhr.open('POST', 'https://discord.com/api/v9/channels/'+channalId+'/messages', true);
         xhr.setRequestHeader('authorization',document.getElementById('token_').value );
-        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+            xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
 
         let body = {"content":msg,"nonce":Math.floor(100000 + Math.random() * 900000000000000000),"tts":false}
         xhr.send((JSON.stringify(body)))
